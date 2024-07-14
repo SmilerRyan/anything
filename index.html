@@ -6,14 +6,23 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var query = new URLSearchParams(window.location.search);
-            var link = document.createElement('a');
-            link.href = `https://github.com/user-attachments/files/${query.get('id')}`;
-            link.setAttribute('download', decodeURIComponent(query.get('download')));
-            if (document.body) {
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
+            var fileUrl = `https://github.com/user-attachments/files/${query.get('id')}`;
+            var fileName = decodeURIComponent(query.get('download'));
+
+            fetch(fileUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    var link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute('download', fileName);
+                    if (document.body) {
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }).catch(error => {
+                    console.error('Error fetching the file:', error);
+                });
         });
     </script>
 </head>
